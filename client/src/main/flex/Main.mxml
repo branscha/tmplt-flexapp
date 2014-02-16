@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx">
+
+    <s:layout>
+        <s:VerticalLayout horizontalAlign="center" verticalAlign="middle" />
+    </s:layout>
+
+    <fx:Declarations>
+        <mx:RemoteObject id="timeRequest" destination="dest-timeservice">
+            <mx:method
+                    name="fetchTime"
+                    result="returnHandler(event)"
+                    fault="mx.controls.Alert.show(event.fault.faultDetail)"/>
+        </mx:RemoteObject>
+    </fx:Declarations>
+
+    <fx:Script>
+        <![CDATA[
+        public function getTimeNow() {
+            timeRequest.fetchTime.send();
+        }
+
+        public function returnHandler(event:Event) {
+            timeLabel.text = timeRequest.fetchTime.lastResult;
+        }
+        ]]>
+    </fx:Script>
+
+    <mx:Panel width="400" height="150" title="Ping Service" horizontalAlign="center" verticalAlign="middle">
+	<mx:Button label="Get Time Now" click="getTimeNow()" />
+    <mx:Label id="timeLabel" />
+    </mx:Panel>
+</s:Application>

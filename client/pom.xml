@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>flexapp</artifactId>
+        <groupId>org.branscha.flexapp</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <!--suppress MavenRedundantGroupId -->
+    <groupId>org.branscha.flexapp</groupId>
+    <artifactId>client</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>swf</packaging>
+    <name>client</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <flexmojos.version>6.0.1</flexmojos.version>
+        <flex.framework.version>4.11.0.20131017</flex.framework.version>
+        <playerglobal.version>11.7</playerglobal.version>
+    </properties>
+
+    <build>
+        <sourceDirectory>src/main/flex</sourceDirectory>
+        <testSourceDirectory>src/test/flex</testSourceDirectory>
+        <finalName>flexapp</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>write-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>
+                                ${project.build.sourceDirectory}/build.properties
+                            </outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>net.flexmojos.oss</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <version>${flexmojos.version}</version>
+
+                <extensions>true</extensions>
+
+                <executions>
+                    <execution>
+                        <id>generate-html-wrapper</id>
+                        <goals>
+                            <goal>wrapper</goal>
+                        </goals>
+                        <configuration>
+                            <templateURI>folder:src/main/html-template/</templateURI>
+                            <parameters>
+                                <swf>${project.build.finalName}.swf</swf>
+                                <title>Flex App</title>
+                                <width>100%</width>
+                                <height>100%</height>
+                                <bgcolor>#ffffff</bgcolor>
+                                <application>Main</application>
+                                <version_major>10</version_major>
+                                <version_minor>2</version_minor>
+                                <version_revision>0</version_revision>
+                            </parameters>
+                        </configuration>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <targetPlayer>${playerglobal.version}</targetPlayer>
+                    <debug>true</debug>
+                    <!--
+                          The contextRoot is used by RemoteObject to construct the URL to send the messages.
+                          It should be the same as the endpoint declaration in the services-config.xml on the server.
+                          url="http://{server.name}:{server.port}/{context.root}/messagebroker/amf"
+                    -->
+                    <contextRoot>flexapp</contextRoot>
+                    <services>../server/src/main/web/WEB-INF/flex/services-config.xml</services>
+
+                    <compilerWarnings>
+                        <show-actionscript-warnings>false</show-actionscript-warnings>
+                        <show-binding-warnings>false</show-binding-warnings>
+                        <show-invalid-css-property-warnings>false</show-invalid-css-property-warnings>
+                    </compilerWarnings>
+
+                    <storepass/>
+                    <includeTestFiles>
+                        <include>**/*Test.as</include>
+                        <include>**/*TestCase.as</include>
+                    </includeTestFiles>
+                </configuration>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.flex</groupId>
+                        <artifactId>compiler</artifactId>
+                        <version>${flex.framework.version}</version>
+                        <type>pom</type>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <finalName>flexapp</finalName>
+                    <descriptors>
+                        <descriptor>assembly/bin.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.flex.framework</groupId>
+            <artifactId>flex-framework</artifactId>
+            <version>${flex.framework.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flash.framework</groupId>
+            <artifactId>playerglobal</artifactId>
+            <version>${playerglobal.version}</version>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.flex.framework.themes</groupId>
+            <artifactId>spark</artifactId>
+            <version>${flex.framework.version}</version>
+            <type>swc</type>
+            <scope>theme</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flexunit</groupId>
+            <artifactId>flexunit</artifactId>
+            <version>4.1.0</version>
+            <classifier>flex4</classifier>
+            <type>swc</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>hamcrest-as3</groupId>
+            <artifactId>hamcrest-as3</artifactId>
+            <version>1.1.0</version>
+            <type>swc</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
